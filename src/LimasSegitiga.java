@@ -2,7 +2,7 @@
 public class LimasSegitiga extends Segitiga implements Runnable {
     
     // Instruksi 1: Atribut public semua
-    public double tinggiLimas, volume, luasPermukaan;
+    public double tinggiLimas, volumeLimas, luasPermukaanLimas;
     
     public LimasSegitiga() {
         super();
@@ -18,25 +18,25 @@ public class LimasSegitiga extends Segitiga implements Runnable {
     }
     
     // Proses internal kalkulasi tinggi limas menggunakan atribut public milik parent
-    private void hitungTinggiLimasInternal() {
+    public void hitungTinggiLimasInternal() {
         this.tinggiLimas = Math.sqrt(Math.pow(super.alas / 2.0, 2) + Math.pow(super.tinggi, 2)) * 0.8;
     }
 
     // Instruksi 3 & 4: Overloading Tanpa Parameter & Tidak perlu hitung ulang
-    public double hitungVolume() {
+    public double hitungVolumeLimas() {
         // Menggunakan "super.luas", TIDAK PERLU panggil method hitungLuas() lagi
-        this.volume = (1.0 / 3.0) * super.luas * this.tinggiLimas;
-        return this.volume;
+        this.volumeLimas = (1.0 / 3.0) * super.luas * this.tinggiLimas;
+        return this.volumeLimas;
     }
 
     // Instruksi 4: Overloading Dengan Parameter
-    public double hitungVolume(double luasAlasParent, double tinggiLimasMasuk) {
-        this.volume = (1.0 / 3.0) * luasAlasParent * tinggiLimasMasuk;
-        return this.volume;
+    public double hitungVolumeLimas(double luasAlasParent, double tinggiLimasMasuk) {
+        this.volumeLimas = (1.0 / 3.0) * luasAlasParent * tinggiLimasMasuk;
+        return this.volumeLimas;
     }
 
     // Instruksi 3 & 4: Luas Permukaan tanpa hitung ulang luas alas
-    public double hitungLuasPermukaan() {
+    public double hitungLuasPermukaanLimas() {
         // Cari tinggi sisi tegak menggunakan super.alas
         double tinggiSisiTegak = Math.sqrt(Math.pow(super.alas / 2.0, 2) + Math.pow(this.tinggiLimas, 2));
         
@@ -44,24 +44,24 @@ public class LimasSegitiga extends Segitiga implements Runnable {
         double luasSelimut = 3 * (0.5 * super.alas * tinggiSisiTegak);
         
         // Tambahkan luas alas dari parent (super.luas) dengan luas selimut
-        this.luasPermukaan = super.luas + luasSelimut;
-        return this.luasPermukaan;
+        this.luasPermukaanLimas = super.luas + luasSelimut;
+        return this.luasPermukaanLimas;
     }
 
     // Overloading Luas Permukaan dengan parameter (menggunakan referensi data parent)
-    public double hitungLuasPermukaan(double luasAlasParent, double alasParent, double tinggiLimasMasuk) {
+    public double hitungLuasPermukaanLimas(double luasAlasParent, double alasParent, double tinggiLimasMasuk) {
         double tinggiSisiTegak = Math.sqrt(Math.pow(alasParent / 2.0, 2) + Math.pow(tinggiLimasMasuk, 2));
         double luasSelimut = 3 * (0.5 * alasParent * tinggiSisiTegak);
         
-        this.luasPermukaan = luasAlasParent + luasSelimut;
-        return this.luasPermukaan;
+        this.luasPermukaanLimas = luasAlasParent + luasSelimut;
+        return this.luasPermukaanLimas;
     }
 
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
     public void run() {
         // Begitu Thread dijalankan ( start() ), class otomatis menghitung Volume dan Luas Permukaan
-        this.hitungVolume();
-        this.hitungLuasPermukaan();
+        this.hitungVolumeLimas();
+        this.hitungLuasPermukaanLimas();
     }
 }

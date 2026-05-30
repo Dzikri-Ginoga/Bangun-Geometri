@@ -20,7 +20,7 @@ public class Segitiga extends BangunGeometri {
     // Instruksi 4: Overloading (Tanpa Parameter)
     @Override
     public double hitungLuas() {
-       this.luas = 0.5 * this.alas * this.tinggi;
+       luas = 0.5 * this.alas * this.tinggi;
        return this.luas;
     }
 
@@ -33,14 +33,14 @@ public class Segitiga extends BangunGeometri {
     // Instruksi 4: Overloading (Tanpa Parameter)
     @Override
     public double hitungKeliling() {
-        double sisiMiring = Math.sqrt(Math.pow(this.alas / 2.0, 2) + Math.pow(this.tinggi, 2));
+        double sisiMiring = Math.abs(Math.pow(this.alas / 2.0, 2) + Math.pow(this.tinggi, 2));
         this.keliling = this.alas + (2 * sisiMiring);
         return this.keliling;
     }
 
     // Instruksi 4: Overloading (Dengan Parameter)
     public double hitungKeliling(double alasMasuk, double tinggiMasuk) {
-        double sisiMiring = Math.sqrt(Math.pow(alasMasuk / 2.0, 2) + Math.pow(tinggiMasuk, 2));
+        double sisiMiring = Math.abs(Math.pow(alasMasuk / 2.0, 2) + Math.pow(tinggiMasuk, 2));
         this.keliling = alasMasuk + (2 * sisiMiring);
         return this.keliling;
     }

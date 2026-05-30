@@ -2,7 +2,7 @@
 public class PrismaSegitiga extends Segitiga implements Runnable {
     
     // Instruksi 1: Atribut public
-    public double tinggiPrisma, volume, luasPermukaan;
+    public double tinggiPrisma, volumePrisma, luasPermukaanPrisma;
     
     public PrismaSegitiga(){
         super();
@@ -16,37 +16,37 @@ public class PrismaSegitiga extends Segitiga implements Runnable {
     }
 
     // Instruksi 3 & 4: Overloading Tanpa Parameter & Tidak perlu hitung ulang
-    public double hitungVolume(){
+    public double hitungVolumePrisma(){
         // Menggunakan "super.luas" yang sudah ada, TIDAK PERLU panggil method hitungLuas() lagi
-        this.volume = super.luas * this.tinggiPrisma;
-        return this.volume;                
+        this.volumePrisma = super.luas * this.tinggiPrisma;
+        return this.volumePrisma;                
     }
 
     // Instruksi 4: Overloading Dengan Parameter (menggunakan referensi luas parent)
-    public double hitungVolume(double luasAlasParent, double tinggiPrismaMasuk){
-        this.volume = luasAlasParent * tinggiPrismaMasuk;
-        return this.volume;
+    public double hitungVolumePrisma(double luasAlasParent, double tinggiPrismaMasuk){
+        this.volumePrisma = luasAlasParent * tinggiPrismaMasuk;
+        return this.volumePrisma;
     }
 
     // Instruksi 3 & 4: Luas Permukaan tanpa hitung ulang luas & keliling
-    public double hitungLuasPermukaan() {
+    public double hitungLuasPermukaanPrisma() {
         // Ambil super.luas untuk alas/tutup, dan super.keliling untuk selimut
-        this.luasPermukaan = (2 * super.luas) + (super.keliling * this.tinggiPrisma);
-        return this.luasPermukaan;
+        this.luasPermukaanPrisma = (2 * super.luas) + (super.keliling * this.tinggiPrisma);
+        return this.luasPermukaanPrisma;
     }
 
     // Overloading Luas Permukaan dengan parameter
-    public double hitungLuasPermukaan(double luasAlasParent, double kelilingAlasParent, double tinggiPrismaMasuk) {
-        this.luasPermukaan = (2 * luasAlasParent) + (kelilingAlasParent * tinggiPrismaMasuk);
-        return this.luasPermukaan;
+    public double hitungLuasPermukaanPrisma(double luasAlasParent, double kelilingAlasParent, double tinggiPrismaMasuk) {
+        this.luasPermukaanPrisma = (2 * luasAlasParent) + (kelilingAlasParent * tinggiPrismaMasuk);
+        return this.luasPermukaanPrisma;
     }
 
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
     public void run() {
         // Menjalankan proses hitung secara sinkron di dalam Thread ini
-        this.hitungVolume();
-        this.hitungLuasPermukaan();
+        this.hitungVolumePrisma();
+        this.hitungLuasPermukaanPrisma();
         
         // Print untuk memastikan thread berjalan saat di-start()
         // System.out.println("Thread Prisma selesai mengeksekusi volume dan LP.");
