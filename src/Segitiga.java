@@ -1,47 +1,54 @@
-public class Segitiga extends BangunGeometri {
+public class Segitiga implements BangunGeometri, Runnable {
     
     // Instruksi 1: Atribut private diganti public semua
     public double alas, tinggi, luas, keliling;
-
-    public Segitiga() {
-        this.alas = 0.0;
-        this.tinggi = 0.0;
-    }
     
-    public Segitiga(double alas, double tinggi){
+    public Segitiga (double alas, double tinggi){
+        
         this.alas = alas;
         this.tinggi = tinggi;
         
-        // Memastikan nilai awal luas dan keliling sudah terisi
-        this.hitungLuas(); 
+        this.hitungLuas();
         this.hitungKeliling();
+                
     }
-
-    // Instruksi 4: Overloading (Tanpa Parameter)
+    
     @Override
     public double hitungLuas() {
-       luas = 0.5 * this.alas * this.tinggi;
+       this.luas = 0.5 * this.alas * this.tinggi;
        return this.luas;
     }
 
-    // Instruksi 4: Overloading (Dengan Parameter)
-    public double hitungLuas(double alasMasuk, double tinggiMasuk) {
-       this.luas = 0.5 * alasMasuk * tinggiMasuk;
-       return this.luas;
+    //Overloading (Dengan Parameter)
+    @Override
+    public double hitungLuas(double alas, double tinggi) {
+       luas = 0.5 * alas * tinggi;
+       return luas;
     }
 
-    // Instruksi 4: Overloading (Tanpa Parameter)
     @Override
     public double hitungKeliling() {
-        double sisiMiring = Math.abs(Math.pow(this.alas / 2.0, 2) + Math.pow(this.tinggi, 2));
-        this.keliling = this.alas + (2 * sisiMiring);
-        return this.keliling;
+        double sisiMiring = Math.sqrt(Math.pow(this.alas / 2.0, 2) + Math.pow(this.tinggi, 2));
+        keliling = this.alas + (2 * sisiMiring);
+        return keliling;
     }
 
-    // Instruksi 4: Overloading (Dengan Parameter)
-    public double hitungKeliling(double alasMasuk, double tinggiMasuk) {
-        double sisiMiring = Math.abs(Math.pow(alasMasuk / 2.0, 2) + Math.pow(tinggiMasuk, 2));
-        this.keliling = alasMasuk + (2 * sisiMiring);
-        return this.keliling;
+    //Overloading (Dengan Parameter)
+    @Override
+    public double hitungKeliling(double alas, double tinggi) {
+        double sisiMiring = Math.sqrt(Math.pow(alas / 2.0, 2) + Math.pow(tinggi, 2));
+        keliling = alas + (2 * sisiMiring);
+        return keliling;
+    }
+    
+    @Override
+    public void run() {
+        // Menjalankan proses hitung secara sinkron di dalam Thread ini
+        this.hitungLuas();
+        this.hitungLuas(alas, tinggi);
+        this.hitungKeliling();
+        this.hitungKeliling(alas, tinggi);
+        
+        // Print untuk memastikan thread berjalan saat di-start()
     }
 }

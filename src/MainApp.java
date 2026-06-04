@@ -44,9 +44,9 @@ public class MainApp extends JFrame {
         pbThread3 = new JProgressBar(0, 10000); pbThread3.setStringPainted(true);
 
         //ini di ubah: memisahkan kolom menjadi 3 array berbeda untuk masing-masing tabel
-        String[] kolSegitiga = {"No", "Alas S3", "Tinggi S3", "Luas S3", "Keliling S3"};
-        String[] kolPrisma = {"No", "Vol Prisma", "LP Prisma"};
-        String[] kolLimas = {"No", "Vol Limas", "LP Limas"};
+        String[] kolSegitiga = {"No", "Alas Segitiga", "Tinggi Segitiga", "Luas Segitiga", "Keliling Segitiga"};
+        String[] kolPrisma = {"No", "Volume Prisma Segitiga", "LP Prisma Segitiga"};
+        String[] kolLimas = {"No", "Volume Limas", "LP Limas"};
 
         //ini di ubah: menginisialisasi 3 model dan 3 tabel
         modelSegitiga = new DefaultTableModel(kolSegitiga, 0);
@@ -72,7 +72,8 @@ public class MainApp extends JFrame {
 
         // Langkah 5: Meletakkan Komponen Utara
         //ini di ubah: Memasukkan label dan kotak input ke dalam panel utara
-        panelUtara.add(new JLabel(" Jumlah Data (Max 50.000):"));
+        panelUtara.add(new JLabel(" Jumlah Data"
+                + ":"));
         panelUtara.add(txtJumlahData);
         panelUtara.add(lblProgress1); panelUtara.add(pbThread1);
         panelUtara.add(lblProgress2); panelUtara.add(pbThread2);
@@ -132,7 +133,7 @@ public class MainApp extends JFrame {
                 JOptionPane.showMessageDialog(this, "Input tidak valid! Menggunakan 1000 data.");
                 txtJumlahData.setText("1000");
             }
-            final int jumlahData = Math.min(inputData, 50000); // Batas Max
+            final int jumlahData = inputData;
 
             //ini di ubah: Set limit ujung Progress Bar secara dinamis
             SwingUtilities.invokeLater(() -> {
