@@ -14,15 +14,15 @@ public class PrismaSegitiga extends Segitiga implements Runnable {
 
     // Instruksi 3 & 4: Luas Permukaan tanpa hitung ulang luas & keliling
     public double hitungLuasPermukaanPrisma() {
-        this.luasPermukaanPrisma = (2 * super.luas) + (super.keliling * this.tinggiPrisma);
-        return this.luasPermukaanPrisma;
+        luasPermukaanPrisma = (2 * super.luas) + (super.keliling * this.tinggiPrisma);
+        return luasPermukaanPrisma;
     }
 
-    // Overloading Luas Permukaan dengan parameter
-    public double hitungLuasPermukaanPrisma(double luasAlasParent, double kelilingAlasParent, double tinggiPrismaMasuk) {
-        this.luasPermukaanPrisma = (2 * luasAlasParent) + (kelilingAlasParent * tinggiPrismaMasuk);
-        return this.luasPermukaanPrisma;
-    }
+//    // Overloading Luas Permukaan dengan parameter
+//    public double hitungLuasPermukaanPrisma(double luasAlasParent, double kelilingAlasParent, double tinggiPrismaMasuk) {
+//        this.luasPermukaanPrisma = (2 * luasAlasParent) + (kelilingAlasParent * tinggiPrismaMasuk);
+//        return this.luasPermukaanPrisma;
+//    }
 
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
