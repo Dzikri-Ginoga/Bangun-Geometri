@@ -4,9 +4,13 @@ public class LimasSegitiga extends Segitiga implements Runnable {
     // Instruksi 1: Atribut public semua
     public double tinggiLimas, volumeLimas, luasPermukaanLimas;
     
-    public LimasSegitiga(double alas, double tinggi) {
+    public LimasSegitiga(double alas, double tinggi, boolean isManual) {
         
-        super(alas, tinggi);
+        super(alas, tinggi, isManual);
+        
+        if (alas <= 0 || tinggi <= 0) {
+            throw new IllegalArgumentException("Nilai alas dan tinggi untuk Limas harus lebih besar dari 0!");
+        }
         
         // Tinggi limas tidak diinput dari luar, melainkan dihitung internal 
         this.hitungTinggiLimasInternal();
@@ -17,6 +21,10 @@ public class LimasSegitiga extends Segitiga implements Runnable {
     }
 
     public double hitungVolumeLimas() {
+        
+        if (super.luas <= 0) {
+            throw new IllegalStateException("Gagal menghitung volume: Luas alas dari class Segitiga belum dihitung atau tidak valid.");
+        }
         
         volumeLimas = (1.0 / 3.0) * super.luas * this.tinggiLimas;
         return volumeLimas;
@@ -30,8 +38,13 @@ public class LimasSegitiga extends Segitiga implements Runnable {
 
     // Instruksi 3 & 4: Luas Permukaan tanpa hitung ulang luas alas
     public double hitungLuasPermukaanLimas() {
+        
+        if (super.luas <= 0) {
+            throw new IllegalStateException("Gagal menghitung luas permukaan: Luas alas dari class Segitiga belum dihitung atau tidak valid.");
+        }
+        
         double tinggiSisiTegak = Math.sqrt(Math.pow(super.alas / 2.0, 2) + Math.pow(this.tinggiLimas, 2));
-        double luasSelimut = 3 * (0.5 * super.alas * tinggiSisiTegak);
+        double luasSelimut = 0.5 * super.keliling * tinggiSisiTegak;
         
         // Tambahkan luas alas dari parent (super.luas) dengan luas selimut
         luasPermukaanLimas = super.luas + luasSelimut;
@@ -50,6 +63,8 @@ public class LimasSegitiga extends Segitiga implements Runnable {
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
     public void run() {
+        
+        super.run();
         // Begitu Thread dijalankan ( start() ), class otomatis menghitung Volume dan Luas Permukaan
         this.hitungVolumeLimas();
         this.hitungLuasPermukaanLimas();
