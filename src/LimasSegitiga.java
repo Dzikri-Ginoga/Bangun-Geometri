@@ -31,12 +31,13 @@ public class LimasSegitiga extends Segitiga implements Runnable {
     }
     
     public double hitungVolumeLimas(double alas, double tinggi, double tinggiLimas) throws IllegalStateException{
+        double luasAlas = super.hitungLuas(alas, tinggi);
         
-        if (super.hitungLuas(alas, tinggi) <= 0) {
+        if (luasAlas <= 0) {
             throw new IllegalStateException("Gagal menghitung volume: Luas alas dari class Segitiga belum dihitung atau tidak valid.");
         }
         
-        volumeLimas = (1.0 / 3.0) * super.hitungLuas(alas, tinggi) * tinggiLimas;
+        volumeLimas = (1.0 / 3.0) * luasAlas * tinggiLimas;
         return volumeLimas;
     }
 
@@ -56,23 +57,25 @@ public class LimasSegitiga extends Segitiga implements Runnable {
 
      public double hitungLuasPermukaanLimas(double alas, double tinggi, double tinggiLimas) throws IllegalStateException {
         
-        if (super.hitungLuas(alas, tinggi) <= 0) {
+        double luasAlas = super.hitungLuas(alas, tinggi);
+        double kelilingAlas = super.hitungKeliling(alas, tinggi);
+        
+        if (luasAlas <= 0) {
             throw new IllegalStateException("Gagal menghitung luas permukaan: Luas alas dari class Segitiga belum dihitung atau tidak valid.");
         }
         
         double tinggiSisiTegak = Math.sqrt(Math.pow(alas / 2.0, 2) + Math.pow(tinggiLimas, 2));
         
-        this.luasSelimut = 0.5 * super.hitungKeliling(alas, tinggi) * tinggiSisiTegak;
+        this.luasSelimut = 0.5 * kelilingAlas * tinggiSisiTegak;
         
-        this.luasPermukaanLimas = super.hitungLuas(alas, tinggi)  + luasSelimut;
+        this.luasPermukaanLimas = luasAlas  + luasSelimut;
         return luasPermukaanLimas;
     }
      
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
-    public void run() {
-        
-        super.run();
+    public void run() { 
+       super.run();
        if(this.isManual){
             this.hitungLuasPermukaanLimas(alas, tinggi, tinggiLimas);
             this.hitungVolumeLimas(alas, tinggi, tinggiLimas);
