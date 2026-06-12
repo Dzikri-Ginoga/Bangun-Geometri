@@ -34,7 +34,7 @@ public class Segitiga implements BangunGeometri, Runnable {
     }
 
     @Override
-    public double hitungKeliling() {
+    public double hitungKeliling() throws IllegalStateException {
          if (this.alas <= 0 || this.tinggi <= 0) {
             throw new IllegalStateException("Gagal menghitung keliling: Atribut alas atau tinggi tidak valid.");
         }

@@ -12,7 +12,7 @@ public class PrismaSegitiga extends Segitiga implements Runnable {
         this.tinggiPrisma = tinggiPrisma;
     }
     
-    public double hitungVolumePrisma(){
+    public double hitungVolumePrisma() throws IllegalStateException {
         
         if (super.luas <= 0) {
             throw new IllegalStateException("Gagal menghitung volume: Luas alas dari class Segitiga belum dihitung atau bernilai 0.");
@@ -21,9 +21,19 @@ public class PrismaSegitiga extends Segitiga implements Runnable {
         volumePrisma = super.luas * this.tinggiPrisma;
         return volumePrisma;                
     }
+    
+    public double hitungVolumePrisma(double alas, double tinggi) throws IllegalStateException {
+        
+        if (super.hitungLuas(alas, tinggi) <= 0) {
+            throw new IllegalStateException("Gagal menghitung volume: Luas alas dari class Segitiga belum dihitung atau bernilai 0.");
+        }
+        
+        volumePrisma = super.hitungLuas(alas, tinggi) * this.tinggiPrisma;
+        return volumePrisma;                
+    }
 
     // Instruksi 3 & 4: Luas Permukaan tanpa hitung ulang luas & keliling
-    public double hitungLuasPermukaanPrisma() {
+    public double hitungLuasPermukaanPrisma() throws IllegalStateException{
         
          if (super.luas <= 0 || super.keliling <= 0) {
             throw new IllegalStateException("Gagal menghitung luas permukaan: Luas atau keliling dari class Segitiga belum dihitung.");
@@ -33,21 +43,27 @@ public class PrismaSegitiga extends Segitiga implements Runnable {
         return luasPermukaanPrisma;
     }
 
-//    // Overloading Luas Permukaan dengan parameter
-//    public double hitungLuasPermukaanPrisma(double luasAlasParent, double kelilingAlasParent, double tinggiPrismaMasuk) {
-//        this.luasPermukaanPrisma = (2 * luasAlasParent) + (kelilingAlasParent * tinggiPrismaMasuk);
-//        return this.luasPermukaanPrisma;
-//    }
+    // Overloading Luas Permukaan dengan parameter
+    public double hitungLuasPermukaanPrisma(double alas, double tinggi) throws IllegalStateException  {
+       if(super.hitungLuas(alas, tinggi) <= 0 && super.hitungKeliling(alas, tinggi) <= 0){
+            throw new IllegalStateException("Gagal menghitung luas permukaan: Luas atau keliling dari class Segitiga belum dihitung.");
+       }
+       
+       luasPermukaanPrisma = (2 * super.hitungLuas(alas, tinggi)) + (super.hitungKeliling(alas, tinggi) * this.tinggiPrisma);
+       return luasPermukaanPrisma;
+    }
 
     // Instruksi 2: Wajib memiliki run() karena implements Runnable
     @Override
     public void run() {
-        super.run();
-        // Menjalankan proses hitung secara sinkron di dalam Thread ini
-        this.hitungVolumePrisma();
-        this.hitungLuasPermukaanPrisma();
-        
-        // Print untuk memastikan thread berjalan saat di-start()
-        // System.out.println("Thread Prisma selesai mengeksekusi volume dan LP.");
+       super.run();
+       
+       if(this.isManual){
+           this.hitungLuasPermukaanPrisma(alas, tinggi);
+           this.hitungVolumePrisma(alas, tinggi);
+        } else{
+            this.hitungLuasPermukaanPrisma();
+            this.hitungVolumePrisma();
+        }   
     }
 }
