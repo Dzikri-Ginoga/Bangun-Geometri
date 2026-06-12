@@ -75,8 +75,8 @@ public class GeometriGUI extends JFrame {
         pbThread3.setStringPainted(true);
 
         String[] kolSegitiga = {"No", "Alas Segitiga", "Tinggi Segitiga", "Luas Segitiga", "Keliling Segitiga"};
-        String[] kolPrisma = {"No", "Volume Prisma Segitiga", "LP Prisma Segitiga"};
-        String[] kolLimas = {"No", "Volume Limas", "LP Limas"};
+        String[] kolPrisma = {"No", "Tinggi Prisma", "Volume Prisma Segitiga", "LP Prisma Segitiga"};
+        String[] kolLimas = {"No", "Tinggi Limas", "Volume Limas", "LP Limas"};
 
         modelSegitiga = new DefaultTableModel(kolSegitiga, 0);
         modelPrisma = new DefaultTableModel(kolPrisma, 0);
@@ -307,8 +307,8 @@ public class GeometriGUI extends JFrame {
             });
 
             String[][] dataSegitiga = new String[jumlahData][5];
-            String[][] dataPrisma = new String[jumlahData][3];
-            String[][] dataLimas = new String[jumlahData][3];
+            String[][] dataPrisma = new String[jumlahData][4];
+            String[][] dataLimas = new String[jumlahData][4];
 
             Random rand = new Random();
 
@@ -348,7 +348,9 @@ public class GeometriGUI extends JFrame {
             final int[] trackerSegitiga = {0};
 
             // --- THREAD 1: Segitiga ---
+            
             Thread thread1 = new Thread(() -> {
+                Random randDelay = new Random();
                 try {
                     for (int i = 0; i < jumlahData; i++) {
                         double alas = kumpulanAlasMentah[i];
@@ -380,172 +382,108 @@ public class GeometriGUI extends JFrame {
 
                         final int progress = i + 1;
                         trackerSegitiga[0] = progress;
-                        SwingUtilities.invokeLater(() -> pbThread1.setValue(progress));
+                        
+                        if (i % 50 == 0 || i == jumlahData - 1) {
+                            SwingUtilities.invokeLater(() -> pbThread1.setValue(progress));
+                        }
 
-                        if (i % 100 == 0) {
+                        if (randDelay.nextInt(100) < 3) {
                             try {
-                                Thread.sleep(1);
+                                Thread.sleep(randDelay.nextInt(4) + 1);
                             } catch (InterruptedException ie) {
-                                // Thread diinterupsi (misal: aplikasi ditutup paksa)
-                                // Set kembali flag interrupt lalu hentikan loop dengan aman
                                 Thread.currentThread().interrupt();
-                                throw ie; // Re-throw agar ditangkap catch luar
+                                throw ie;
                             }
                         }
                     }
-                } catch (InterruptedException ie) {
-                    // Simpan exception ke array untuk dilaporkan Master Thread
-                    errorThread1[0] = new ThreadComputationException(
-                            "Thread Segitiga diinterupsi.", ie
-                    );
-                    Thread.currentThread().interrupt(); // Pulihkan status interrupt
-                } catch (ArithmeticException ae) {
-                    errorThread1[0] = new ThreadComputationException(
-                            "Kesalahan kalkulasi di Thread Segitiga: " + ae.getMessage(), ae
-                    );
-                } catch (NullPointerException npe) {
-                    errorThread1[0] = new ThreadComputationException(
-                            "Objek null ditemukan di Thread Segitiga. Periksa konstruktor kelas Segitiga.", npe
-                    );
                 } catch (Exception e) {
-                    // Tangkap semua exception tak terduga lainnya agar thread tidak mati diam-diam
-                    errorThread1[0] = new ThreadComputationException(
-                            "Error tak terduga di Thread Segitiga: " + e.getMessage(), e
-                    );
+                    errorThread1[0] = new ThreadComputationException("Error di Thread Segitiga: " + e.getMessage(), e);
                 }
             });
 
             // --- THREAD 2: Prisma ---
             Thread thread2 = new Thread(() -> {
+                Random randDelay = new Random();
                 try {
                     for (int i = 0; i < jumlahData; i++) {
                         double alas = kumpulanAlasMentah[i];
                         double tinggi = kumpulanTinggiMentah[i];
                         double tinggiPrisma = kumpulanTinggiPrismaMentah[i];
-
-                        if (Double.isNaN(alas) || Double.isInfinite(alas)
-                                || Double.isNaN(tinggi) || Double.isInfinite(tinggi)
-                                || Double.isNaN(tinggiPrisma) || Double.isInfinite(tinggiPrisma)) {
-                            throw new ArithmeticException(
-                                    "Nilai NaN/Infinity pada data ke-" + (i + 1) + " di Thread Prisma."
-                            );
+                        
+                        if (Double.isNaN(alas) || Double.isInfinite(alas) || Double.isNaN(tinggi) || Double.isInfinite(tinggi) || Double.isNaN(tinggiPrisma) || Double.isInfinite(tinggiPrisma)) {
+                            throw new ArithmeticException("Nilai NaN/Infinity pada data ke-" + (i + 1));
                         }
 
-                        PrismaSegitiga prisma = new PrismaSegitiga(alas, tinggi, tinggiPrisma, isManual);
-                        prisma.run();
-
-                        if (Double.isNaN(prisma.volumePrisma) || Double.isInfinite(prisma.volumePrisma)
-                                || Double.isNaN(prisma.luasPermukaanPrisma) || Double.isInfinite(prisma.luasPermukaanPrisma)) {
-                            throw new ArithmeticException(
-                                    "Hasil kalkulasi Prisma tidak valid pada data ke-" + (i + 1)
-                            );
-                        }
-
-                        dataPrisma[i][1] = String.format("%.2f", prisma.volumePrisma);
-                        dataPrisma[i][2] = String.format("%.2f", prisma.luasPermukaanPrisma);
+                        Segitiga prismaSegitiga = new PrismaSegitiga(alas, tinggi, tinggiPrisma, isManual);
+                        
+                        prismaSegitiga.run();
+//                      
+                        PrismaSegitiga pReal = (PrismaSegitiga) prismaSegitiga;
+                        
+                        dataPrisma[i][1] = String.format("%.2f", pReal.tinggiPrisma);
+                        dataPrisma[i][2] = String.format("%.2f", pReal.volumePrisma);
+                        dataPrisma[i][3] = String.format("%.2f", pReal.luasPermukaanPrisma);
 
                         final int progress = i + 1;
-                        SwingUtilities.invokeLater(() -> pbThread2.setValue(progress));
-
-                        double kurva = Math.cos((double) i / jumlahData * Math.PI * 3.0);
-                        int jeda = (int) (27 + 22 * kurva);
-                        if (jeda < 1) {
-                            jeda = 1;
+                        if (i % 50 == 0 || i == jumlahData - 1) {
+                            SwingUtilities.invokeLater(() -> pbThread2.setValue(progress));
                         }
 
-                        if (i % jeda == 0) {
+                        if (randDelay.nextInt(100) < 3) {
                             try {
-                                Thread.sleep(1);
+                                Thread.sleep(randDelay.nextInt(4) + 1);
                             } catch (InterruptedException ie) {
                                 Thread.currentThread().interrupt();
                                 throw ie;
                             }
                         }
                     }
-                } catch (InterruptedException ie) {
-                    errorThread2[0] = new ThreadComputationException("Thread Prisma diinterupsi.", ie);
-                    Thread.currentThread().interrupt();
-                } catch (ArithmeticException ae) {
-                    errorThread2[0] = new ThreadComputationException(
-                            "Kesalahan kalkulasi di Thread Prisma: " + ae.getMessage(), ae
-                    );
-                } catch (NullPointerException npe) {
-                    errorThread2[0] = new ThreadComputationException(
-                            "Objek null di Thread Prisma. Periksa konstruktor kelas PrismaSegitiga.", npe
-                    );
                 } catch (Exception e) {
-                    errorThread2[0] = new ThreadComputationException(
-                            "Error tak terduga di Thread Prisma: " + e.getMessage(), e
-                    );
+                    errorThread2[0] = new ThreadComputationException("Error di Thread Prisma: " + e.getMessage(), e);
                 }
             });
 
             // --- THREAD 3: Limas ---
             Thread thread3 = new Thread(() -> {
+                Random randDelay = new Random();
                 try {
                     for (int i = 0; i < jumlahData; i++) {
                         double alas = kumpulanAlasMentah[i];
                         double tinggi = kumpulanTinggiMentah[i];
-
-                        if (Double.isNaN(alas) || Double.isInfinite(alas)
-                                || Double.isNaN(tinggi) || Double.isInfinite(tinggi)) {
-                            throw new ArithmeticException(
-                                    "Nilai NaN/Infinity pada data ke-" + (i + 1) + " di Thread Limas."
-                            );
+                        
+                        if (Double.isNaN(alas) || Double.isInfinite(alas) || Double.isNaN(tinggi) || Double.isInfinite(tinggi)) {
+                            throw new ArithmeticException("Nilai NaN/Infinity pada data ke-" + (i + 1));
                         }
 
-                        LimasSegitiga limas = new LimasSegitiga(alas, tinggi, isManual);
-                        limas.run();
-
-                        if (Double.isNaN(limas.volumeLimas) || Double.isInfinite(limas.volumeLimas)
-                                || Double.isNaN(limas.luasPermukaanLimas) || Double.isInfinite(limas.luasPermukaanLimas)) {
-                            throw new ArithmeticException(
-                                    "Hasil kalkulasi Limas tidak valid pada data ke-" + (i + 1)
-                            );
-                        }
-
-                        dataLimas[i][1] = String.format("%.2f", limas.volumeLimas);
-                        dataLimas[i][2] = String.format("%.2f", limas.luasPermukaanLimas);
+                        Segitiga limasSegitiga = new LimasSegitiga(alas, tinggi, isManual);
+                        
+                        limasSegitiga.run();
+                        
+                        LimasSegitiga lReal = (LimasSegitiga) limasSegitiga;
+                        
+                        dataLimas[i][1] = String.format("%.2f", lReal.tinggiLimas);
+                        dataLimas[i][2] = String.format("%.2f", lReal.volumeLimas);
+                        dataLimas[i][3] = String.format("%.2f", lReal.luasPermukaanLimas);
 
                         final int progress = i + 1;
-                        SwingUtilities.invokeLater(() -> pbThread3.setValue(progress));
-
-                        double kurva = Math.sin((double) i / jumlahData * Math.PI * 3.0);
-                        int jeda = (int) (27 + 22 * kurva);
-                        if (jeda < 1) {
-                            jeda = 1;
+                        if (i % 50 == 0 || i == jumlahData - 1) {
+                            SwingUtilities.invokeLater(() -> pbThread3.setValue(progress));
                         }
 
-                        if (i % jeda == 0) {
+                        if (randDelay.nextInt(100) < 3) {
                             try {
-                                Thread.sleep(1);
+                                Thread.sleep(randDelay.nextInt(4) + 1);
                             } catch (InterruptedException ie) {
                                 Thread.currentThread().interrupt();
                                 throw ie;
                             }
                         }
                     }
-                } catch (InterruptedException ie) {
-                    errorThread3[0] = new ThreadComputationException("Thread Limas diinterupsi.", ie);
-                    Thread.currentThread().interrupt();
-                } catch (ArithmeticException ae) {
-                    errorThread3[0] = new ThreadComputationException(
-                            "Kesalahan kalkulasi di Thread Limas: " + ae.getMessage(), ae
-                    );
-                } catch (NullPointerException npe) {
-                    errorThread3[0] = new ThreadComputationException(
-                            "Objek null di Thread Limas. Periksa konstruktor kelas LimasSegitiga.", npe
-                    );
                 } catch (Exception e) {
-                    errorThread3[0] = new ThreadComputationException(
-                            "Error tak terduga di Thread Limas: " + e.getMessage(), e
-                    );
+                    errorThread3[0] = new ThreadComputationException("Error di Thread Limas: " + e.getMessage(), e);
                 }
             });
 
-            // -----------------------------------------------------------------
-            // FASE 4: STAGGERED START (logika balapan tidak diubah)
-            // -----------------------------------------------------------------
             thread1.start();
 
             int targetSusul = jumlahData * 30 / 100;
@@ -553,14 +491,9 @@ public class GeometriGUI extends JFrame {
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException ex) {
-                    // Master thread diinterupsi saat menunggu Segitiga mencapai 30%
                     Thread.currentThread().interrupt();
                     SwingUtilities.invokeLater(() -> {
-                        JOptionPane.showMessageDialog(GeometriGUI.this,
-                                "Proses dihentikan paksa saat menunggu Thread Segitiga.",
-                                "Interupsi",
-                                JOptionPane.WARNING_MESSAGE
-                        );
+                        JOptionPane.showMessageDialog(GeometriGUI.this, "Proses dihentikan paksa saat menunggu Thread Segitiga.", "Interupsi", JOptionPane.WARNING_MESSAGE);
                         btnGenerate.setEnabled(true);
                     });
                     return;
@@ -575,53 +508,25 @@ public class GeometriGUI extends JFrame {
                 thread2.join();
                 thread3.join();
             } catch (InterruptedException ex) {
-                // Master thread diinterupsi saat menunggu join
                 Thread.currentThread().interrupt();
                 SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(GeometriGUI.this,
-                            "Proses komputasi dihentikan paksa (join diinterupsi).",
-                            "Interupsi",
-                            JOptionPane.WARNING_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(GeometriGUI.this, "Proses komputasi dihentikan paksa.", "Interupsi", JOptionPane.WARNING_MESSAGE);
                     btnGenerate.setEnabled(true);
                 });
                 return;
             }
-            // -----------------------------------------------------------------
-            // FASE 5: CEK ERROR DARI THREAD WORKER & TAMPILKAN HASIL
-            // Setelah semua thread selesai, periksa apakah ada yang gagal.
-            // -----------------------------------------------------------------
-            SwingUtilities.invokeLater(() -> {
-                // Kumpulkan semua pesan error (jika ada) ke dalam satu StringBuilder
-                StringBuilder pesanError = new StringBuilder();
 
-                if (errorThread1[0] != null) {
-                    pesanError.append("• Thread 1 (Segitiga): ")
-                            .append(errorThread1[0].getMessage())
-                            .append("\n");
-                }
-                if (errorThread2[0] != null) {
-                    pesanError.append("• Thread 2 (Prisma): ")
-                            .append(errorThread2[0].getMessage())
-                            .append("\n");
-                }
-                if (errorThread3[0] != null) {
-                    pesanError.append("• Thread 3 (Limas): ")
-                            .append(errorThread3[0].getMessage())
-                            .append("\n");
-                }
+            // --- FASE 5: TAMPILKAN HASIL ---
+            SwingUtilities.invokeLater(() -> {
+                StringBuilder pesanError = new StringBuilder();
+                if (errorThread1[0] != null) pesanError.append("• Thread 1 (Segitiga): ").append(errorThread1[0].getMessage()).append("\n");
+                if (errorThread2[0] != null) pesanError.append("• Thread 2 (Prisma): ").append(errorThread2[0].getMessage()).append("\n");
+                if (errorThread3[0] != null) pesanError.append("• Thread 3 (Limas): ").append(errorThread3[0].getMessage()).append("\n");
 
                 if (pesanError.length() > 0) {
-                    // Ada error di salah satu atau lebih thread worker
-                    JOptionPane.showMessageDialog(GeometriGUI.this,
-                            "Proses selesai dengan ERROR:\n\n" + pesanError.toString()
-                            + "\nData yang berhasil dihitung tetap ditampilkan.",
-                            "Error Komputasi Thread",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(GeometriGUI.this, "Proses selesai dengan ERROR:\n\n" + pesanError.toString() + "\nData yang berhasil dihitung tetap ditampilkan.", "Error Komputasi Thread", JOptionPane.ERROR_MESSAGE);
                 }
 
-                // Tuangkan data ke tabel (data yang gagal dihitung akan berupa null/kosong)
                 for (int i = 0; i < jumlahData; i++) {
                     modelSegitiga.addRow(dataSegitiga[i]);
                     modelPrisma.addRow(dataPrisma[i]);
@@ -630,13 +535,8 @@ public class GeometriGUI extends JFrame {
 
                 btnGenerate.setEnabled(true);
 
-                // Tampilkan pesan sukses hanya jika tidak ada error sama sekali
                 if (pesanError.length() == 0) {
-                    JOptionPane.showMessageDialog(GeometriGUI.this,
-                            "Proses selesai! Data Berhasil Ditampilkan.",
-                            "Sukses",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(GeometriGUI.this, "Proses selesai! Data Berhasil Ditampilkan.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
                 }
             });
         });
